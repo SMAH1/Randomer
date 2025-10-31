@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/copilot-instructions.md" />
+  </Folder>
+  <Project Path="src/Randomer.csproj" />
+  <Project Path="example/RandomerExample.csproj" />
+  <Project Path="test/RandomerTest.csproj" />
+</Solution>

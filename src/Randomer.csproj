@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PublishAot>true</PublishAot>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<IsAotCompatible>true</IsAotCompatible>
+
+		<!-- NuGet Package Information -->
+		<PackageId>Randomer</PackageId>
+		<Title>Randomer</Title>
+		<Description>Advanced Random Data Generation Library for C#. Provides specialized extension methods for generating random data of various types including strings, GUIDs, IP addresses, MAC addresses, dates, and more.</Description>
+		<Authors>SMAH1</Authors>
+		<PackageProjectUrl>https://github.com/SMAH1/Randomer</PackageProjectUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/SMAH1/Randomer</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>random;random-data;extension-methods;generator;guid;ip-address;mac-address</PackageTags>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
+
+</Project>

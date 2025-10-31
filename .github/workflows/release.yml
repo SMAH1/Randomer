@@ -1,0 +1,81 @@
+name: Build, Release, and Publish to NuGet
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          $tag = "${{ github.ref }}" -replace 'refs/tags/', ''
+          $version = $tag -replace '^v', ''
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+          echo "TAG=$tag" >> $env:GITHUB_OUTPUT
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      - name: Pack NuGet package
+        run: dotnet pack src/Randomer.csproj --configuration Release --output nupkg /p:Version=${{ steps.version.outputs.VERSION }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.TAG }}
+          release_name: Release ${{ steps.version.outputs.VERSION }}
+          body: |
+            # Randomer v${{ steps.version.outputs.VERSION }}
+            
+            This release includes:
+            - Built from source
+            - All tests passed
+            - NuGet package available
+            
+            ## Installation
+            
+            ### NuGet Package Manager
+            ```
+            Install-Package Randomer -Version ${{ steps.version.outputs.VERSION }}
+            ```
+            
+            ### .NET CLI
+            ```
+            dotnet add package Randomer --version ${{ steps.version.outputs.VERSION }}
+            ```
+          draft: false
+          prerelease: false
+
+      - name: Upload NuGet package to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./nupkg/Randomer.${{ steps.version.outputs.VERSION }}.nupkg
+          asset_name: Randomer.${{ steps.version.outputs.VERSION }}.nupkg
+          asset_content_type: application/octet-stream
+
+      - name: Push to NuGet
+        run: dotnet nuget push nupkg/Randomer.${{ steps.version.outputs.VERSION }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
