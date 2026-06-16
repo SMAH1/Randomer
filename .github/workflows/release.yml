@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     
     permissions:
-        id-token: write  # enable GitHub OIDC token issuance for this job
+      id-token: write
+      contents: write
     
     steps:
       - name: Checkout code
@@ -24,10 +25,10 @@ jobs:
       - name: Extract version from tag
         id: version
         run: |
-          $tag = "${{ github.ref }}" -replace 'refs/tags/', ''
-          $version = $tag -replace '^v', ''
-          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
-          echo "TAG=$tag" >> $env:GITHUB_OUTPUT
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG#v}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
 
       - name: Restore dependencies
         run: dotnet restore
@@ -41,13 +42,13 @@ jobs:
       - name: Pack NuGet package
         run: dotnet pack src/Randomer.csproj --configuration Release --output nupkg /p:Version=${{ steps.version.outputs.VERSION }}
 
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
+      - name: Create GitHub Release and Upload Assets
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.version.outputs.TAG }}
-          release_name: Release ${{ steps.version.outputs.VERSION }}
+          name: Release ${{ steps.version.outputs.VERSION }}
           body: |
             # Randomer v${{ steps.version.outputs.VERSION }}
             
@@ -59,33 +60,23 @@ jobs:
             ## Installation
             
             ### NuGet Package Manager
-            ```
+            ```powershell
             Install-Package Randomer -Version ${{ steps.version.outputs.VERSION }}
             ```
             
             ### .NET CLI
-            ```
+            ```bash
             dotnet add package Randomer --version ${{ steps.version.outputs.VERSION }}
             ```
           draft: false
           prerelease: false
+          files: ./nupkg/Randomer.${{ steps.version.outputs.VERSION }}.nupkg
 
-      - name: Upload NuGet package to release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./nupkg/Randomer.${{ steps.version.outputs.VERSION }}.nupkg
-          asset_name: Randomer.${{ steps.version.outputs.VERSION }}.nupkg
-          asset_content_type: application/octet-stream
-
-      # Get a short-lived NuGet API key
       - name: NuGet login (OIDC → temp API key)
         uses: NuGet/login@v1
         id: login
         with:
-            user: ${{ secrets.NUGET_USER }}
+          user: ${{ secrets.NUGET_USER }}
       
       - name: Push to NuGet
-        run: dotnet nuget push nupkg/Randomer.${{ steps.version.outputs.VERSION }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./nupkg/Randomer.${{ steps.version.outputs.VERSION }}.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
