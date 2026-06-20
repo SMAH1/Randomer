@@ -1,29 +1,58 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<PublishAot>true</PublishAot>
-		<InvariantGlobalization>true</InvariantGlobalization>
-		<IsAotCompatible>true</IsAotCompatible>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <IsAotCompatible>true</IsAotCompatible>
 
-		<!-- NuGet Package Information -->
-		<PackageId>Randomer</PackageId>
-		<Title>Randomer</Title>
-		<Description>Advanced Random Data Generation Library for C#. Provides specialized extension methods for generating random data of various types including strings, GUIDs, IP addresses, MAC addresses, dates, and more.</Description>
-		<Authors>SMAH1</Authors>
-		<PackageProjectUrl>https://github.com/SMAH1/Randomer</PackageProjectUrl>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<RepositoryUrl>https://github.com/SMAH1/Randomer</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageTags>random;random-data;extension-methods;generator;guid;ip-address;mac-address</PackageTags>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-	</PropertyGroup>
+    <!-- NuGet Package Information -->
+    <PackageId>Randomer</PackageId>
+    <Title>Randomer</Title>
+    <Description>Advanced Random Data Generation Library for C#. Provides specialized extension methods for generating random data of various types including strings, GUIDs, IP addresses, MAC addresses, dates, and more.</Description>
+    <Authors>SMAH1</Authors>
+    <PackageProjectUrl>https://github.com/SMAH1/Randomer</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/SMAH1/Randomer</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>random;random-data;extension-methods;generator;guid;ip-address;mac-address</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>License MIT</Copyright>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="../README_NUGET.md" Pack="true" PackagePath="/README.md"/>
-	</ItemGroup>
+  <!-- NuGet Package README -->
+  <ItemGroup>
+    <None Include="../README_NUGET.md" Pack="true" PackagePath="/README.md" />
+  </ItemGroup>
+
+  <!-- Version from Git tag -->
+  <Target Name="SetVersionFromGitTag" BeforeTargets="GetAssemblyVersion;GenerateAssemblyInfo;GenerateNuspec;_GetPackageFiles">
+    <Exec Command="git describe --tags --match &quot;v*&quot; --abbrev=0" ConsoleToMSBuild="true" IgnoreExitCode="true" WorkingDirectory="$(MSBuildProjectDirectory)">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_GitTagRaw" />
+    </Exec>
+
+    <PropertyGroup>
+      <GitTagTrimmed>$([System.String]::Copy('$(_GitTagRaw)').Trim())</GitTagTrimmed>
+    </PropertyGroup>
+
+    <Exec Command="git rev-parse --short HEAD" ConsoleToMSBuild="true" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_GitCommitId" />
+    </Exec>
+
+    <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(_GitTagRaw.Trim())', '^v[0-9]'))">
+      <_GitTagStripped>$(_GitTagRaw.Substring(1).Trim())</_GitTagStripped>
+      <GitCommitId>$(_GitCommitId.Trim())</GitCommitId>
+      <Version>$(_GitTagStripped)</Version>
+      <PackageVersion>$(Version)</PackageVersion>
+      <AssemblyVersion>$(Version)</AssemblyVersion>
+      <FileVersion>$(Version)</FileVersion>
+      <InformationalVersion>$(Version)+$(GitCommitId)</InformationalVersion>
+      <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    </PropertyGroup>
+    <Message Importance="high" Text="Version resolved: tag=$(_GitTagRaw.Trim()) commit=$(GitCommitId) → $(Version)+$(GitCommitId)" />
+  </Target>
 
 </Project>
