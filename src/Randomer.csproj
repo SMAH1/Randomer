@@ -19,8 +19,11 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>random;random-data;extension-methods;generator;guid;ip-address;mac-address</PackageTags>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="../README_NUGET.md" Pack="true" PackagePath="/README.md"/>
+	</ItemGroup>
 
 </Project>
