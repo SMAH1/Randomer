@@ -140,7 +140,7 @@ public class StringTest
         var rnd = new Random();
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => rnd.GenerateString(10, null));
+        Assert.Throws<ArgumentException>(() => rnd.GenerateString(10, null!));
     }
 
     [Fact]
