@@ -60,14 +60,20 @@ string ipWithConstraint = rnd.GenerateIPv4Address(192, 168); // Starting with 19
 
 #### 3. **Math Extensions**
 Probability distribution functions:
+- Uniform Continuous Distribution
 - Exponential Distribution
+- Normal Distribution
+- Uniform Discrete Distribution
+- Bernoulli Distribution
+- Binomial Distribution
+- Poisson Distribution
 
 **Example:**
 ```csharp
 var rnd = new Random();
 
 // Generate number with exponential distribution
-double exponential = rnd.GenerateExponential(mean: 2.0);
+double exponential = rnd.GeneratePDExponential(lambda: 0.2);
 ```
 
 #### 4. **Other Extensions**

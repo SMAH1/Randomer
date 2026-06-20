@@ -15,23 +15,23 @@ public class MathExamples
         Console.WriteLine("\n------- Math Extension Functions -------");
         Console.ResetColor();
 
-        GenerateExponentialExample();
+        GeneratePDExponential();
     }
 
-    private void GenerateExponentialExample()
+    private void GeneratePDExponential()
     {
-        Console.WriteLine("\n=== GenerateExponential ===");
+        Console.WriteLine("\n=== GeneratePDExponential ===");
         Console.WriteLine("Random exponential values with mean=2.0:");
         for (int i = 0; i < 5; i++)
         {
-            double value = _rnd.GenerateExponential(2.0);
+            double value = _rnd.GeneratePDExponential(2.0);
             Console.WriteLine($"  {value:F4}");
         }
 
         Console.WriteLine("\nRandom exponential values with mean=5.0:");
         for (int i = 0; i < 5; i++)
         {
-            double value = _rnd.GenerateExponential(5.0);
+            double value = _rnd.GeneratePDExponential(5.0);
             Console.WriteLine($"  {value:F4}");
         }
     }

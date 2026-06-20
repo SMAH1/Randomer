@@ -12,7 +12,7 @@ public class MathTest
         double mean = 5.0;
 
         // Act
-        double result = rnd.GenerateExponential(mean);
+        double result = rnd.GeneratePDExponential(mean);
 
         // Assert
         Assert.True(result >= 0, "Exponential distribution should return non-negative values");
@@ -26,7 +26,7 @@ public class MathTest
         double mean = 1.0;
 
         // Act
-        double result = rnd.GenerateExponential(mean);
+        double result = rnd.GeneratePDExponential(mean);
 
         // Assert
         Assert.True(result >= 0);
@@ -46,7 +46,7 @@ public class MathTest
         // Act & Assert
         for (int i = 0; i < 100; i++)
         {
-            double result = rnd.GenerateExponential(mean);
+            double result = rnd.GeneratePDExponential(mean);
             Assert.True(result >= 0, $"All values should be non-negative for mean={mean}");
             Assert.True(double.IsFinite(result), $"All values should be finite for mean={mean}");
         }
@@ -60,9 +60,9 @@ public class MathTest
         double mean = 3.0;
 
         // Act
-        double value1 = rnd.GenerateExponential(mean);
-        double value2 = rnd.GenerateExponential(mean);
-        double value3 = rnd.GenerateExponential(mean);
+        double value1 = rnd.GeneratePDExponential(mean);
+        double value2 = rnd.GeneratePDExponential(mean);
+        double value3 = rnd.GeneratePDExponential(mean);
 
         // Assert
         Assert.NotEqual(value1, value2);
@@ -78,7 +78,7 @@ public class MathTest
         double mean = 1000.0;
 
         // Act
-        double result = rnd.GenerateExponential(mean);
+        double result = rnd.GeneratePDExponential(mean);
 
         // Assert
         Assert.True(result >= 0);
@@ -93,7 +93,7 @@ public class MathTest
         double mean = 0.01;
 
         // Act
-        double result = rnd.GenerateExponential(mean);
+        double result = rnd.GeneratePDExponential(mean);
 
         // Assert
         Assert.True(result >= 0);
@@ -113,7 +113,7 @@ public class MathTest
         double sum = 0;
         for (int i = 0; i < sampleCount; i++)
         {
-            sum += rnd.GenerateExponential(expectedMean);
+            sum += rnd.GeneratePDExponential(expectedMean);
         }
         double calculatedMean = sum / sampleCount;
 
